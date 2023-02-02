@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bookstore/server/middleware"
 	"bookstore/store"
 	"context"
 	"encoding/json"
@@ -26,9 +27,10 @@ func NewBookStoreServer(addr string, s store.Store) *BookStoreServer {
 	router.HandleFunc("/book", srv.createBookHandler).Methods("POST")
 	router.HandleFunc("/book/{id}", srv.updateBookHandler).Methods("PUT")
 	router.HandleFunc("/book/{id}", srv.getBookHandler).Methods("GET")
-	router.HandleFunc("/book", srv.getAllBooksHandler).Methods("GET")
+	router.HandleFunc("/books", srv.getAllBooksHandler).Methods("GET")
 	router.HandleFunc("/book/{id}", srv.delBookHandler).Methods("DELETE")
 
+	srv.srv.Handler = middleware.Logging(middleware.Validating(router))
 	return srv
 }
 
